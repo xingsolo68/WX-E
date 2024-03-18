@@ -2,18 +2,6 @@
 
 ## Getting Started
 
-Clone the repository
-
-```bash
-git clone https://github.com/gadfaria/express-sequelize-boilerplate.git
-```
-
-Enter into the directory
-
-```bash
-cd WX-E/
-```
-
 Install the dependencies
 
 ```bash
@@ -65,8 +53,8 @@ yarn sequelize db:drop
 yarn sequelize db:migrate
 
 # Undo migrations
-yarn sequelize db:migrate:undo:all
 
+yarn sequelize db:migrate:undo:all
 # Load seeders
 yarn sequelize db:seed:all
 ```
