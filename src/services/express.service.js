@@ -21,7 +21,10 @@ const expressService = {
             server.use(bodyParser.json())
             server.use(globalErrorHandler)
             server.listen(process.env.SERVER_PORT)
-            console.log('[EXPRESS] Express initialized')
+            console.log(
+                '[EXPRESS] Express initialized at port ' +
+                    process.env.SERVER_PORT
+            )
         } catch (error) {
             console.log('[EXPRESS] Error during express service initialization')
             throw error
