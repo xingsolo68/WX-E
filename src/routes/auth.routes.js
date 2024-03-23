@@ -1,11 +1,12 @@
 import { Router } from 'express'
 
-import loginController from '../controllers/login.controller'
+import { asyncHandler } from '../helpers/asyncHandler'
 import authMiddleware from '../middlewares/auth.middleware'
-
+import { authController } from '../controllers'
 const authRoutes = Router()
 
-authRoutes.post('/login', loginController.login)
-authRoutes.get('/logout', authMiddleware, loginController.logout)
+authRoutes.post('/sign-in', asyncHandler(authController.login))
+authRoutes.post('/sign-up', asyncHandler(authController.signUp))
+authRoutes.get('/logout', authMiddleware, asyncHandler(authController.logout))
 
 export { authRoutes }

@@ -1,7 +1,8 @@
-import { Router } from "express";
-import addressController from "../controllers/address.controller";
+import { Router } from 'express'
+import { addressController } from '../controllers'
+import { asyncHandler } from '../helpers/asyncHandler'
 
-const addressRoutes = Router();
-addressRoutes.post("/address", addressController.add);
+const addressRoutes = Router()
+addressRoutes.post('/address', asyncHandler(addressController.add))
 
-export { addressRoutes };
+export { addressRoutes }

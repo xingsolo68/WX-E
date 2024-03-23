@@ -13,12 +13,15 @@ const expressService = {
     init: async () => {
         try {
             server = express()
-
-            server.use('/auth', authRoutes)
-            server.use('/users', userRoutes)
-            server.use('address', addressRoutes)
-
             server.use(bodyParser.json())
+
+            const router = express.Router()
+            router.use('/auth', authRoutes)
+            router.use('/users', userRoutes)
+            router.use('/address', addressRoutes)
+
+            server.use('/api', router)
+
             server.use(globalErrorHandler)
             server.listen(process.env.SERVER_PORT)
             console.log(

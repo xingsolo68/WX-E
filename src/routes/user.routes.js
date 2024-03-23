@@ -1,13 +1,18 @@
-import { Router } from "express";
-import userController from "../controllers/user.controller";
-import authMiddleware from "../middlewares/auth.middleware";
+import { Router } from 'express'
+import { userController } from '../controllers'
+import authMiddleware from '../middlewares/auth.middleware'
+import { asyncHandler } from '../helpers/asyncHandler'
 
-const userRoutes = Router();
-userRoutes.post("/user", userController.add);
-userRoutes.post("/user/address", authMiddleware, userController.addAddress);
-userRoutes.get("/user", userController.get);
-userRoutes.get("/user/:id", userController.find);
-userRoutes.put("/user", authMiddleware, userController.update);
-userRoutes.delete("/user/:id", userController.delete);
+const userRoutes = Router()
+userRoutes.post('/user', asyncHandler(userController.add))
+userRoutes.post(
+    '/user/address',
+    authMiddleware,
+    asyncHandler(userController.addAddress)
+)
+userRoutes.get('/user', asyncHandler(userController.get))
+userRoutes.get('/user/:id', asyncHandler(userController.find))
+userRoutes.put('/user', authMiddleware, asyncHandler(userController.update))
+userRoutes.delete('/user/:id', asyncHandler(userController.delete))
 
-export { userRoutes };
+export { userRoutes }
