@@ -1,14 +1,25 @@
-import Sequelize, { Model } from 'sequelize'
-import bcrypt from 'bcryptjs'
+import { Model, DataTypes } from 'sequelize'
 
-class User extends Model {
+class ProductItem extends Model {
     static init(sequelize) {
         super.init(
             {
-                name: Sequelize.STRING,
-                email: Sequelize.STRING,
-                password: Sequelize.VIRTUAL, //When it is VIRTUAL it does not exist in the database
-                password_hash: Sequelize.STRING,
+                id: {
+                    type: DataTypes.INTEGER,
+                    primaryKey: true,
+                    autoIncrement: true,
+                },
+                qualityInStock: {
+                    type: DataTypes.INTEGER,
+                    defaultValue: 0,
+                },
+                productImage: {
+                    type: DataTypes.STRING,
+                },
+                price: {
+                    type: DataTypes.FLOAT,
+                    defaultValue: 0,
+                },
             },
             {
                 sequelize,
@@ -16,29 +27,17 @@ class User extends Model {
                 //paranoid: true, //If it's true, it does not allow deleting from the bank, but inserts column deletedAt. Timestamps need be true.
                 //underscored: true, //If it's true, does not add camelcase for automatically generated attributes, so if we define updatedAt it will be created as updated_at.
                 //freezeTableName: false, //If it's false, it will use the table name in the plural. Ex: Users
-                tableName: 'User', //Define table name
+                //tableName: 'Users' //Define table name
             }
         )
-
-        this.addHook('beforeSave', async (user) => {
-            if (user.password) {
-                user.password_hash = await bcrypt.hash(user.password, 8)
-            }
-        })
-
         return this
     }
-
     static associate(models) {
-        this.belongsToMany(models.Address, {
+        this.belongsTo(models.Product, {
             through: 'UserAddress',
             foreignKey: 'userId',
         })
     }
-
-    checkPassword(password) {
-        return bcrypt.compare(password, this.password_hash)
-    }
 }
 
-export default User
+export default ProductItem

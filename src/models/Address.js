@@ -12,6 +12,7 @@ class Address extends Model {
             {
                 sequelize,
                 timestamps: true,
+                tableName: 'Address',
             }
         )
 

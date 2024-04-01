@@ -33,6 +33,7 @@ const sequelizeService = {
             })
 
             console.log('[SEQUELIZE] Database service initialized')
+            await connection.sync()
         } catch (error) {
             console.log(
                 '[SEQUELIZE] Error during database service initialization'

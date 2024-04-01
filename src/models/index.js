@@ -1,3 +1,5 @@
-export { default as Address } from './Address'
-export { default as User } from './User'
-export { default as UserAddress } from './UserAddress'
+export { default as Product } from './Product'
+export { default as Earphone } from './Earphone'
+export { default as ProductItem } from './ProductItem'
+export { default as Headphone } from './Headphone'
+export { default as Speaker } from './Speaker'
