@@ -5,8 +5,10 @@
     "repository": "https://github.com/xingsolo68/WX-E",
     "author": "xingsolo68@gmail.com",
     "license": "MIT",
+    "type": "module",
     "scripts": {
-        "dev": "nodemon src/index.js"
+        "dev": "yarn vite-node src/index.js",
+        "test": "jest"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.310.0",
@@ -26,11 +28,14 @@
         "yup": "^1.0.0"
     },
     "devDependencies": {
-        "jest": "^29.7.0",
         "nodemon": "^2.0.18",
+        "rollup-plugin-node-externals": "^7.1.1",
         "sequelize-cli": "^6.4.1",
         "sucrase": "^3.23.0",
-        "supertest": "^6.3.4"
+        "supertest": "^6.3.4",
+        "vite": "^5.2.7",
+        "vite-node": "^1.4.0",
+        "vitest": "^1.4.0"
     },
     "exports": {
         "#src/*": "./*.js"

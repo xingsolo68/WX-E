@@ -16,6 +16,7 @@ const expressService = {
             server.use(bodyParser.json())
 
             const router = express.Router()
+            router.get('/healthcheck', (req, res) => res.status(200).send('ok'))
             router.use('/auth', authRoutes)
             router.use('/users', userRoutes)
             router.use('/address', addressRoutes)
