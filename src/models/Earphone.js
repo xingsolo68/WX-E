@@ -29,7 +29,7 @@ class Earphone extends Model {
         return this
     }
     static associate(models) {
-        this.belongsTo(models.Product)
+        this.belongsTo(models.Product, { foreignKey: 'productId' })
     }
 }
 

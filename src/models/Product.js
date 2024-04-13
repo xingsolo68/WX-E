@@ -40,22 +40,16 @@ class Product extends Model {
 
     static associate(models) {
         this.hasOne(models.Speaker, {
-            foreignKey: {
-                name: 'productId',
-                type: DataTypes.UUID,
-            },
+            foreignKey: 'productId',
         })
         this.hasOne(models.Earphone, {
-            foreignKey: {
-                name: 'productId',
-                type: DataTypes.UUID,
-            },
+            foreignKey: 'productId',
         })
-        this.hasOne(models.Earphone, {
-            foreignKey: {
-                name: 'productId',
-                type: DataTypes.UUID,
-            },
+        this.hasOne(models.Headphone, {
+            foreignKey: 'productId',
+        })
+        this.hasMany(models.ProductItem, {
+            foreignKey: 'productId',
         })
     }
 }

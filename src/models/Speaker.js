@@ -4,9 +4,6 @@ class Speaker extends Model {
     static init(sequelize) {
         super.init(
             {
-                productId: {
-                    type: DataTypes.INTEGER,
-                },
                 brand: {
                     type: DataTypes.STRING,
                 },
@@ -29,7 +26,7 @@ class Speaker extends Model {
         return this
     }
     static associate(models) {
-        this.belongsTo(models.Product)
+        this.belongsTo(models.Product, { foreignKey: 'productId' })
     }
 }
 

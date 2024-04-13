@@ -34,8 +34,7 @@ class ProductItem extends Model {
     }
     static associate(models) {
         this.belongsTo(models.Product, {
-            through: 'UserAddress',
-            foreignKey: 'userId',
+            foreignKey: 'productId',
         })
     }
 }
