@@ -4,7 +4,9 @@ import app from '../services/express.service'
 
 describe('Product Controller', () => {
     it('return response 200', async () => {
-        const response = await supertest(app).get('/healthcheck')
+        const response = await supertest(app.getServer()).get(
+            '/api/healthcheck'
+        )
         expect(response.status).toBe(200)
     })
 })
