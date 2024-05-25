@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import { logger } from '../helpers/logger'
 import { cloneDeep } from 'lodash'
+import { InternalServerError, UnauthorizedError } from '../utils/ApiError'
 
 let jwtidCounter = 0
 let blacklist = []
@@ -12,7 +13,7 @@ const JwtService = {
             if (process.env.SERVER_JWT !== 'true')
                 throw new Error('[JWT] Fastify JWT flag is not setted')
 
-            logger.log('[JWT] Generating JWT sign')
+            logger.info('[JWT] Generating JWT sign')
 
             const payload = cloneDeep(_payload)
             jwtidCounter = jwtidCounter + 1
@@ -29,12 +30,12 @@ const JwtService = {
     jwtGetToken: (request) => {
         try {
             if (process.env.SERVER_JWT !== 'true')
-                throw new Error('[JWT] JWT flag is not setted')
+                throw new InternalServerError('[JWT] JWT flag is not setted')
             if (
                 !request.headers.authorization ||
                 request.headers.authorization.split(' ')[0] !== 'Bearer'
             )
-                throw new Error('[JWT] JWT token not provided')
+                throw new UnauthorizedError('[JWT] JWT token not provided')
 
             return request.headers.authorization.split(' ')[1]
         } catch (error) {
@@ -46,7 +47,7 @@ const JwtService = {
     jwtVerify: (token) => {
         try {
             if (process.env.SERVER_JWT !== 'true')
-                throw new Error('[JWT] JWT flag is not setted')
+                throw new InternalServerError('[JWT] JWT flag is not setted')
 
             return jwt.verify(
                 token,
