@@ -4,9 +4,6 @@ class Headphone extends Model {
     static init(sequelize) {
         super.init(
             {
-                productId: {
-                    type: DataTypes.INTEGER,
-                },
                 brand: {
                     type: DataTypes.STRING,
                 },

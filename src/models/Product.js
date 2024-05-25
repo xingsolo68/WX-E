@@ -17,14 +17,12 @@ class Product extends Model {
                 price: {
                     type: DataTypes.FLOAT,
                 },
-                thumb: {
+                thumbnail: {
                     type: DataTypes.STRING,
                 },
                 type: DataTypes.ENUM(['Speaker', 'Headphone', 'Earphone']),
                 description: DataTypes.STRING,
                 attributes: DataTypes.JSONB,
-                slug: DataTypes.STRING,
-                image: DataTypes.STRING,
             },
             {
                 sequelize,
