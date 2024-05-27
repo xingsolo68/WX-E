@@ -1,7 +1,8 @@
 import { describe, it, expect, afterAll, beforeAll } from 'vitest'
 import sequelizeService from '../../services/sequelize.service'
-import { ProductFactory } from '../../services/product.service'
+import ProductFactory from '../../services/product.service'
 import { Earphone, Product } from '../../models'
+import slugify from 'slugify'
 
 beforeAll(async () => {
     await sequelizeService.initTestDB()
@@ -36,6 +37,7 @@ describe('Product Service', () => {
         expect(createdProduct.description).toBe(productData.description)
         expect(createdProduct.price).toBe(parseFloat(productData.price))
         expect(createdProduct.type).toBe(productData.type)
+        expect(createdProduct.slug).toBe(slugify(productData.name))
 
         // Check if the earphone attributes are created in the Earphone table
         const createdEarphone = await Earphone.findOne({

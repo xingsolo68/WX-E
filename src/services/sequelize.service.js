@@ -6,10 +6,6 @@ let connection
 
 const sequelizeService = {
     loadModels: async function () {
-        // for (const file of modelFiles) {
-        // if (file.startsWith('index.js')) {
-        //     continue
-        // }
         const models = await import(`../models`)
         for (const modelName in models) {
             const model = models[modelName]

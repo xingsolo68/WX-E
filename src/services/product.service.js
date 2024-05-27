@@ -4,19 +4,22 @@ import { Product, Earphone, Headphone, Speaker } from '../models/'
 import Product from '../models/Product'
 import { omit } from 'lodash'
 
-export class ProductFactory {
+class ProductFactory {
     // Product factory
+
+    static productRegistery = {}
+
+    static registerProductType(type, classRef) {
+        ProductFactory.productRegistery[type] = classRef
+    }
+
     static async create(type, payload) {
-        switch (type) {
-            case PRODUCT_TYPE.EARPHONE:
-                return new EarphoneEntity(payload).save()
-            case PRODUCT_TYPE.HEADPHONE:
-                return new HeadphoneEntity(payload).save()
-            case PRODUCT_TYPE.SPEAKER:
-                return new SpeakerEntity(payload).save()
-            default:
-                throw new BadRequestError('Invalid product type')
-        }
+        const productClass = ProductFactory.productRegistery[type]
+
+        if (!productClass)
+            throw new BadRequestError(`Invalid Product Types ${type}`)
+
+        return new productClass(payload).save()
     }
 }
 
@@ -78,3 +81,15 @@ export class HeadphoneEntity extends ProductEntity {
         return newProduct
     }
 }
+
+const strategyClass = {
+    [PRODUCT_TYPE.EARPHONE]: EarphoneEntity,
+    [PRODUCT_TYPE.HEADPHONE]: HeadphoneEntity,
+    [PRODUCT_TYPE.SPEAKER]: SpeakerEntity,
+}
+
+Object.keys(strategyClass).forEach((type) => {
+    ProductFactory.registerProductType(type, strategyClass[type])
+})
+
+export default ProductFactory
