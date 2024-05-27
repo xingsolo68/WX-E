@@ -4,6 +4,17 @@ class Speaker extends Model {
     static init(sequelize) {
         super.init(
             {
+                productId: {
+                    type: DataTypes.INTEGER,
+                    primaryKey: true,
+                    allowNull: false,
+                    references: {
+                        model: 'Product',
+                        key: 'id',
+                    },
+                    onUpdate: 'CASCADE',
+                    onDelete: 'CASCADE',
+                },
                 brand: {
                     type: DataTypes.STRING,
                 },

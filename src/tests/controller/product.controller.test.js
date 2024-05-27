@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import supertest from 'supertest'
-import app from '../services/express.service'
+import app from '../../services/express.service'
 
 describe('Product Controller', () => {
     it('return response 200', async () => {
