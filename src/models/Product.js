@@ -40,6 +40,10 @@ class Product extends Model {
                     type: DataTypes.BOOLEAN,
                     defaultValue: true,
                 },
+                isPublished: {
+                    type: DataTypes.BOOLEAN,
+                    defaultValue: false,
+                },
             },
             {
                 sequelize,
