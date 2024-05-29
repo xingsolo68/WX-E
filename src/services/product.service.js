@@ -4,17 +4,16 @@ import { Product, Earphone, Headphone, Speaker } from '../models/'
 import Product from '../models/Product'
 import { omit } from 'lodash'
 
-class ProductFactory {
+class ProductService {
     // Product factory
-
     static productRegistery = {}
 
     static registerProductType(type, classRef) {
-        ProductFactory.productRegistery[type] = classRef
+        ProductService.productRegistery[type] = classRef
     }
 
     static async create(type, payload) {
-        const productClass = ProductFactory.productRegistery[type]
+        const productClass = ProductService.productRegistery[type]
 
         if (!productClass)
             throw new BadRequestError(`Invalid Product Types ${type}`)
@@ -102,7 +101,7 @@ const strategyClass = {
 }
 
 Object.keys(strategyClass).forEach((type) => {
-    ProductFactory.registerProductType(type, strategyClass[type])
+    ProductService.registerProductType(type, strategyClass[type])
 })
 
-export default ProductFactory
+export default ProductService

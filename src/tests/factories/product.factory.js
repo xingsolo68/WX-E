@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker'
-import { ProductEntity } from '../../services/product.service'
+import ProductService from '../../services/product.service'
 
 export class ProductFactory {
     static async create(type = 'Earphone', overridedFields = {}) {
         const defaultFields = {
             name: faker.commerce.productName(),
             price: faker.commerce.price(),
-            thumbnail: faker.image.imageUrl(),
+            thumbnail: faker.image.url(),
             type,
             description: faker.commerce.productDescription(),
             attributes: {
@@ -18,10 +18,7 @@ export class ProductFactory {
         }
 
         const productData = { ...defaultFields, ...overridedFields }
-
-        const productEntity = new ProductEntity(productData)
-        await productEntity.save()
-
-        return productEntity
+        const result = await ProductService.create(type, productData)
+        return result
     }
 }

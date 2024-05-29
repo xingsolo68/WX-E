@@ -35,7 +35,11 @@ const sequelizeService = {
 
     initTestDB: async function () {
         try {
-            connection = new Sequelize(testDatabaseConfig)
+            connection = new Sequelize({
+                dialect: 'sqlite',
+                storage: ':memory:',
+                logging: false,
+            })
             await this.loadModels()
 
             logger.info('[SEQUELIZE] Test database service initialized')
