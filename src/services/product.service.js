@@ -48,7 +48,6 @@ export class ProductEntity {
     }
 
     async save() {
-        console.log(this)
         return await Product.create(omit(this, ['attributes']))
     }
 }
