@@ -3,6 +3,8 @@ import sequelizeService from '../../services/sequelize.service'
 import ProductService from '../../services/product.service'
 import { Earphone, Product, Shop } from '../../models'
 import slugify from 'slugify'
+import { ProductFactory } from '../factories/product.factory'
+import ProductRepository from '../../repositories/product.repository'
 
 beforeAll(async () => {
     await sequelizeService.initTestDB()

@@ -1,7 +1,16 @@
-import { describe, it, expect, afterAll, beforeEach, beforeAll } from 'vitest'
+import {
+    describe,
+    it,
+    expect,
+    afterAll,
+    beforeEach,
+    beforeAll,
+    test,
+    afterEach,
+} from 'vitest'
 import ProductRepository from '../../repositories/product.repository'
 import sequelizeService from '../../services/sequelize.service'
-import { Shop } from '../../models'
+import { Shop, Product } from '../../models'
 import { ProductFactory } from '../factories/product.factory'
 
 beforeAll(async () => {
@@ -13,36 +22,58 @@ afterAll(async () => {
 })
 
 describe('Product Repository', async () => {
+    // After all tests in the Product Repository suite
     let testShop
-
     beforeEach(async () => {
         testShop = await Shop.create({
             name: 'Test shop',
-            email: 'test_shop@gmail.com',
+            email: 'testShop@gmail.com',
         })
     })
 
-    // After all tests in the Product Repository suite
+    afterEach(async () => {
+        await testShop.destroy()
+    })
     describe('getDraftProductForShop', () => {
         it('should return all the draft products', async () => {
             const product = await ProductFactory.create('Earphone', {
                 shopId: testShop.id,
+                isDraft: true,
             })
             await ProductFactory.create('Earphone', {
+                shopId: testShop.id,
                 isDraft: false,
             })
 
             const draftProducts =
-                await ProductRepository.getDraftProductForShop(testShop.id)
+                await ProductRepository.getDraftProductsForShop(testShop.id)
 
             expect(draftProducts).toHaveLength(1)
             const [retrievedProduct] = draftProducts
 
-            expect(retrievedProduct.name).toBe(retrievedProduct.name)
-            expect(retrievedProduct.price).toBe(retrievedProduct.price)
-            expect(retrievedProduct.description).toBe(
-                retrievedProduct.description
-            )
+            expect(retrievedProduct.name).toBe(product.name)
+            expect(retrievedProduct.description).toBe(product.description)
+        })
+    })
+    describe('getPublishedProductsForShop', async () => {
+        it('should return all the published products', async () => {
+            const product = await ProductFactory.create('Earphone', {
+                shopId: testShop.id,
+                isPublished: true,
+            })
+            await ProductFactory.create('Earphone', {
+                shopId: testShop.id,
+                isPublished: false,
+            })
+
+            const publishedProducts =
+                await ProductRepository.getPublishedProductsForShop(testShop.id)
+
+            expect(publishedProducts).toHaveLength(1)
+            const [retrievedProduct] = publishedProducts
+
+            expect(retrievedProduct.name).toBe(product.name)
+            expect(retrievedProduct.description).toBe(product.description)
         })
     })
 })

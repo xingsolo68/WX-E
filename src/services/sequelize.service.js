@@ -24,7 +24,7 @@ const sequelizeService = {
             await this.loadModels()
 
             logger.info('[SEQUELIZE] Database service initialized')
-            await connection.sync()
+            await connection.sync({ logging: false })
         } catch (error) {
             logger.warn(
                 '[SEQUELIZE] Error during database service initialization'
@@ -39,7 +39,7 @@ const sequelizeService = {
             await this.loadModels()
 
             logger.info('[SEQUELIZE] Test database service initialized')
-            await connection.sync({ force: true })
+            await connection.sync({ force: true, logging: false })
         } catch (error) {
             logger.warn(
                 '[SEQUELIZE] Error during test database service initialization'
