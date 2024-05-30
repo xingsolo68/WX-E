@@ -1,5 +1,12 @@
-import { Product } from '../models'
+import { Product, Earphone, Headphone, Speaker } from '../models'
 import { Op } from 'sequelize'
+import _ from 'lodash'
+
+const subtypeModels = {
+    Earphone,
+    Headphone,
+    Speaker,
+}
 
 class ProductRepository {
     static async fetchDraftProducts(shopId) {
@@ -38,7 +45,7 @@ class ProductRepository {
     static async publishProducts(shopId, productIds) {
         const ids = Array.isArray(productIds) ? productIds : [productIds]
 
-        const [_, affectedRows] = await Product.update(
+        const [affectedRows, _] = await Product.update(
             { isPublished: true, isDraft: false },
             {
                 where: {
@@ -51,7 +58,7 @@ class ProductRepository {
             }
         )
 
-        if (affectedRows !== ids.length) {
+        if (affectedRows === 0) {
             throw new Error(
                 'One or more products not found or could not be updated'
             )
@@ -63,7 +70,7 @@ class ProductRepository {
     static async unpublishProducts(shopId, productIds) {
         const ids = Array.isArray(productIds) ? productIds : [productIds]
 
-        const [_, affectedRows] = await Product.update(
+        const [affectedRows, _] = await Product.update(
             { isPublished: false, isDraft: true },
             {
                 where: {
@@ -76,7 +83,7 @@ class ProductRepository {
             }
         )
 
-        if (affectedRows !== ids.length) {
+        if (affectedRows === 0) {
             throw new Error(
                 'One or more products not found or could not be updated'
             )
@@ -87,6 +94,71 @@ class ProductRepository {
 
     static async fetchAllPublishProducts() {
         return await Product.findAll()
+    }
+
+    static async updateProductAndSubtype(
+        { shopId, productId },
+        updateData = {}
+    ) {
+        if (!shopId || !productId) {
+            throw new Error('Both shopId and productId are required')
+        }
+        const { attributes = {}, ...productUpdateData } = updateData
+        const transaction = await Product.sequelize.transaction()
+
+        try {
+            // Update Product
+            const [affectedRows, updatedProduct] = await Product.update(
+                productUpdateData,
+                {
+                    where: { id: productId, shopId },
+                    returning: true,
+                    raw: true,
+                    transaction,
+                }
+            )
+
+            if (affectedRows === 0) {
+                throw new Error('Product not found or no changes made')
+            }
+
+            const subtypeModel = subtypeModels[updatedProduct[0].type]
+
+            if (attributes && subtypeModel) {
+                // Prepare Subtype Update Data
+                const subtypeFields = _.without(
+                    Object.keys(subtypeModel.rawAttributes),
+                    'productId',
+                    'createdAt',
+                    'updatedAt'
+                )
+                const subtypeUpdateData = _.pick(attributes, subtypeFields)
+
+                if (!_.isEmpty(subtypeUpdateData)) {
+                    // Update Subtype
+                    const [updateCount] = await subtypeModel.update(
+                        subtypeUpdateData,
+                        {
+                            where: { productId },
+                            transaction,
+                        }
+                    )
+
+                    if (updateCount === 0) {
+                        throw new Error(
+                            `${subtypeModel.name} not found or no changes made`
+                        )
+                    }
+                }
+            }
+
+            // Commit Transaction
+            await transaction.commit()
+        } catch (error) {
+            // Rollback Transaction in Case of Error
+            await transaction.rollback()
+            throw error
+        }
     }
 }
 

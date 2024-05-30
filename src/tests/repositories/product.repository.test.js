@@ -10,7 +10,7 @@ import {
 } from 'vitest'
 import ProductRepository from '../../repositories/product.repository'
 import sequelizeService from '../../services/sequelize.service'
-import { Shop, Product } from '../../models'
+import { Shop, Product, Earphone } from '../../models'
 import { ProductFactory } from '../factories/product.factory'
 import { Op } from 'sequelize'
 
@@ -33,8 +33,8 @@ describe('Product Repository', async () => {
     })
 
     afterEach(async () => {
-        await Product.truncate()
-        await Shop.truncate()
+        await Shop.truncate({ cascade: true })
+        await Product.truncate({ cascade: true })
     })
     describe('getDraftProductForShop', () => {
         it('should return all the draft products', async () => {
@@ -168,6 +168,49 @@ describe('Product Repository', async () => {
 
             const products = await ProductRepository.fetchAllPublishProducts()
             expect(products.length).toBe(2)
+        })
+    })
+
+    describe('updateProduct', async () => {
+        it('should update the product', async () => {
+            const product = await ProductFactory.create('Earphone', {
+                shopId: testShop.id,
+            })
+
+            await ProductRepository.updateProductAndSubtype(
+                { shopId: testShop.id, productId: product.id },
+                {
+                    name: 'Updated Product',
+                    attributes: {
+                        brand: 'Apple',
+                        size: 'XL',
+                        material: 'leather',
+                    },
+                }
+            )
+
+            const updatedProduct = await Product.findByPk(product.id)
+            expect(updatedProduct.name).toBe('Updated Product')
+
+            const updatedEarphone = await Earphone.findByPk(product.id)
+            expect(updatedEarphone.brand).toBe('Apple')
+            expect(updatedEarphone.size).toBe('XL')
+            expect(updatedEarphone.material).toBe('leather')
+        })
+
+        it('should not  update the product not belong to shop', async () => {
+            const product = await ProductFactory.create('Earphone', {})
+            const invalidShopId = 9999
+
+            expect(
+                ProductRepository.updateProductAndSubtype(
+                    { shopId: invalidShopId, productId: product.id },
+                    {
+                        name: 'Updated Product',
+                        type: 'Earphone',
+                    }
+                )
+            ).rejects.throw('Product not found or no changes made')
         })
     })
 })

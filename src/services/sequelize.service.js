@@ -14,7 +14,7 @@ const sequelizeService = {
 
         for (const modelName in models) {
             const model = models[modelName]
-            model.associate && model.associate(connection.models)
+            model.associate && (await model.associate(connection.models))
         }
     },
 
@@ -35,11 +35,7 @@ const sequelizeService = {
 
     initTestDB: async function () {
         try {
-            connection = new Sequelize({
-                dialect: 'sqlite',
-                storage: ':memory:',
-                logging: false,
-            })
+            connection = new Sequelize(testDatabaseConfig)
             await this.loadModels()
 
             logger.info('[SEQUELIZE] Test database service initialized')
