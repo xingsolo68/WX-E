@@ -2,7 +2,7 @@ import { PRODUCT_TYPE } from '../constants/product'
 import BadRequestError from '../errors/BadRequestError'
 import { Product, Earphone, Headphone, Speaker } from '../models/'
 import Product from '../models/Product'
-import { omit } from 'lodash'
+import { omit, pick } from 'lodash'
 
 class ProductService {
     // Product factory
@@ -32,8 +32,8 @@ export class ProductEntity {
         description,
         attributes,
         shopId,
-        isDraft,
-        isPublished,
+        isDraft = true,
+        isPublished = false,
     }) {
         this.name = name
         this.price = price
@@ -47,7 +47,9 @@ export class ProductEntity {
     }
 
     async save() {
-        return await Product.create(omit(this, ['attributes']))
+        return await Product.create(omit(this, ['attributes']), {
+            attributes: ['name', 'price', 'description'],
+        })
     }
 }
 
@@ -61,7 +63,14 @@ export class SpeakerEntity extends ProductEntity {
         })
         if (newSpeaker) throw BadRequestError('Create new product error')
 
-        return newProduct
+        return pick(newProduct, [
+            'name',
+            'price',
+            'description',
+            'type',
+            'thumbnail',
+            'id',
+        ])
     }
 }
 
@@ -76,7 +85,14 @@ export class EarphoneEntity extends ProductEntity {
         })
         if (!newEarphone) throw new BadRequestError('Create new product error')
 
-        return newProduct
+        return pick(newProduct, [
+            'name',
+            'price',
+            'description',
+            'type',
+            'thumbnail',
+            'id',
+        ])
     }
 }
 
@@ -90,7 +106,14 @@ export class HeadphoneEntity extends ProductEntity {
         })
         if (newHeadphone) throw new BadRequestError('Create new product error')
 
-        return newProduct
+        return pick(newProduct, [
+            'name',
+            'price',
+            'description',
+            'type',
+            'thumbnail',
+            'id',
+        ])
     }
 }
 

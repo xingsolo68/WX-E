@@ -2,7 +2,7 @@ import express from 'express'
 import fs from 'fs'
 import bodyParser from 'body-parser'
 import globalErrorHandler from '../middlewares/errorHandler.middleware'
-import { userRoutes, addressRoutes, authRoutes } from '../routes'
+import { userRoutes, addressRoutes, authRoutes, productRoutes } from '../routes'
 import { logger } from '../helpers/logger'
 /*
   body-parser: Parse incoming request bodies in a middleware before your handlers, 
@@ -35,6 +35,7 @@ const expressService = {
         router.use('/auth', authRoutes)
         router.use('/users', userRoutes)
         router.use('/address', addressRoutes)
+        router.use('/products', productRoutes)
 
         server.use('/api', router)
 

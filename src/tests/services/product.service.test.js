@@ -1,10 +1,16 @@
-import { describe, it, expect, afterAll, beforeAll } from 'vitest'
+import {
+    describe,
+    it,
+    expect,
+    afterAll,
+    beforeAll,
+    beforeEach,
+    afterEach,
+} from 'vitest'
 import sequelizeService from '../../services/sequelize.service'
 import ProductService from '../../services/product.service'
 import { Earphone, Product, Shop } from '../../models'
 import slugify from 'slugify'
-import { ProductFactory } from '../factories/product.factory'
-import ProductRepository from '../../repositories/product.repository'
 
 beforeAll(async () => {
     await sequelizeService.initTestDB()
@@ -14,19 +20,26 @@ afterAll(async () => {
     await sequelizeService.close()
 })
 describe('Product Service', () => {
-    it('create a new product', async () => {
-        const shop = await Shop.create({
+    let testShop
+    beforeEach(async () => {
+        testShop = await Shop.create({
             name: 'Test shop',
-            email: 'test_shop@gmail.com',
+            email: 'testShop@gmail.com',
         })
+    })
 
+    afterEach(async () => {
+        await Shop.truncate({ cascade: true })
+        await Product.truncate({ cascade: true })
+    })
+    it('create a new product', async () => {
         const productData = await ProductService.create('Earphone', {
             name: 'Jabra Elite 75',
             description: 'A very good product',
             price: '12',
             type: 'Earphone',
             thumbnail: '',
-            shopId: shop.id,
+            shopId: testShop.id,
             attributes: {
                 brand: 'Jabra',
                 size: 'M',
@@ -45,7 +58,7 @@ describe('Product Service', () => {
         expect(createdProduct.price).toBe(parseFloat(productData.price))
         expect(createdProduct.type).toBe(productData.type)
         expect(createdProduct.slug).toBe(slugify(productData.name))
-        expect(createdProduct.shopId).toBe(shop.id)
+        expect(createdProduct.shopId).toBe(testShop.id)
 
         // Check if the earphone attributes are created in the Earphone table
         const createdEarphone = await Earphone.findOne({

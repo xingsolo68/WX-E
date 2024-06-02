@@ -6,4 +6,9 @@ export default defineConfig({
         nodeExternals(),
         // other plugins follow
     ],
+    resolve: {
+        alias: {
+            yup: 'yup/index.js',
+        },
+    },
 })
