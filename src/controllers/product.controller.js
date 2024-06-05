@@ -26,9 +26,65 @@ export class ProductController {
 
     static async handleFetchDraftProducts(req, res, next) {
         try {
-            const draftProducts = await ProductRepository.fetchDraftProducts(1)
+            const shopId = req.headers['shop-id']
+            const draftProducts = await ProductRepository.fetchDraftProducts(
+                shopId
+            )
 
             return res.status(200).json(draftProducts)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async handlePublishProduct(req, res, next) {
+        try {
+            const { productId, shopId } = req.body
+
+            const updatedProduct = await ProductRepository.publishProducts(
+                shopId,
+                productId
+            )
+
+            return updatedProduct
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async handleUnpublishProduct(req, res, next) {
+        try {
+            const { productId, shopId } = req.body
+
+            const updatedProduct = await ProductRepository.publishProducts(
+                shopId,
+                productId
+            )
+
+            return updatedProduct
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async handleFetchPublishedProduct(req, res, next) {
+        try {
+            const shopId = req.headers['shop-id']
+
+            const publishedProducts =
+                await ProductRepository.fetchPublishedProducts(shopId)
+
+            return res.status(200).json(publishedProducts)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    static async handleFetchAllPublishedProducts(req, res, next) {
+        try {
+            const products = await ProductRepository.fetchAllPublishProducts()
+
+            return products
         } catch (error) {
             next(error)
         }

@@ -1,16 +1,13 @@
-import { describe, it, expect, afterAll, beforeAll, test } from 'vitest'
-import sequelizeService from '../../services/sequelize.service'
+import { describe, it, expect, afterEach } from 'vitest'
 import supertest from 'supertest'
 import expressService from '../../services/express.service'
-import { Shop } from '../../models'
+import { Shop, Product, Earphone } from '../../models'
 import { ProductFactory } from '../factories/product.factory'
 
-beforeAll(async () => {
-    await sequelizeService.initTestDB()
-})
-
-afterAll(async () => {
-    await sequelizeService.close()
+afterEach(async () => {
+    await Earphone.truncate({ cascade: true, restartIdentity: true })
+    await Product.truncate({ cascade: true, restartIdentity: true })
+    await Shop.truncate({ cascade: true, restartIdentity: true })
 })
 
 describe('(POST) /api/product', () => {
@@ -55,9 +52,37 @@ describe('(GET) /api/products/draft', () => {
             isDraft: true,
         })
 
-        const response = await supertest(expressService.getServer()).get(
-            '/api/products/draft'
-        )
+        const response = await supertest(expressService.getServer())
+            .get('/api/products/draft')
+            .set('shop-id', testShop.id)
+        expect(response.body[0].name).toBe(product.name)
+        expect(response.body[0].price).toBe(product.price)
+        expect(response.body[0].id).toBe(product.id)
+        expect(response.body[0].type).toBe(product.type)
+    })
+})
+
+describe('(GET) /api/products/published', () => {
+    it('should return all the published products from shop', async () => {
+        const testShop = await Shop.create({
+            name: 'Test shop',
+            email: 'test.shop@gmail.com',
+        })
+
+        await ProductFactory.create('Earphone', {
+            shopId: testShop.id,
+            isDraft: true,
+        })
+
+        const product = await ProductFactory.create('Earphone', {
+            shopId: testShop.id,
+            isPublished: true,
+        })
+
+        const response = await supertest(expressService.getServer())
+            .get('/api/products/published')
+            .set('shop-id', testShop.id)
+
         expect(response.body[0].name).toBe(product.name)
         expect(response.body[0].price).toBe(product.price)
         expect(response.body[0].id).toBe(product.id)

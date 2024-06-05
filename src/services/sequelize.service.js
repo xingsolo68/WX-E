@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize'
-import { databaseConfig, testDatabaseConfig } from '../config/database'
+import config from '../config/database'
 import { logger } from '../helpers/logger'
 
 let connection
@@ -20,7 +20,7 @@ const sequelizeService = {
 
     init: async function () {
         try {
-            connection = new Sequelize(databaseConfig)
+            connection = new Sequelize(config.development)
             await this.loadModels()
 
             logger.info('[SEQUELIZE] Database service initialized')
@@ -35,11 +35,11 @@ const sequelizeService = {
 
     initTestDB: async function () {
         try {
-            connection = new Sequelize(testDatabaseConfig)
+            connection = new Sequelize(config.test)
             await this.loadModels()
 
             logger.info('[SEQUELIZE] Test database service initialized')
-            await connection.sync({ force: true, logging: false })
+            await connection.sync()
         } catch (error) {
             logger.warn(
                 '[SEQUELIZE] Error during test database service initialization'

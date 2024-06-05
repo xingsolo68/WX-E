@@ -1,3 +1,4 @@
+import fs from 'fs'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -12,12 +13,20 @@ const commonConfig = {
     },
 }
 
-export const databaseConfig = {
+const development = {
     ...commonConfig,
     database: process.env.DB_NAME,
+    dialectOptions: {
+        bigNumberStrings: true,
+    },
 }
 
-export const testDatabaseConfig = {
+const test = {
     ...commonConfig,
     database: process.env.DB_TEST_NAME,
+    dialectOptions: {
+        bigNumberStrings: true,
+    },
 }
+
+export default { development, test }

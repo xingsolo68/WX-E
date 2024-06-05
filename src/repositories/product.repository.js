@@ -10,11 +10,13 @@ const subtypeModels = {
 
 class ProductRepository {
     static async fetchDraftProducts(shopId) {
-        return this.queryProducts({ filter: { shopId, isDraft: true } })
+        return await this.queryProducts({ filter: { shopId, isDraft: true } })
     }
 
     static async fetchPublishedProducts(shopId) {
-        return this.queryProducts({ filter: { shopId, isPublished: true } })
+        return await this.queryProducts({
+            filter: { shopId, isPublished: true },
+        })
     }
 
     static async queryProducts({
@@ -93,7 +95,9 @@ class ProductRepository {
     }
 
     static async fetchAllPublishProducts() {
-        return await Product.findAll()
+        return await Product.findAll({
+            where: { isPublished: true },
+        })
     }
 
     static async updateProductAndSubtype(

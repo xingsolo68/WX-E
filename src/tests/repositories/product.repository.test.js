@@ -14,28 +14,23 @@ import { Shop, Product, Earphone } from '../../models'
 import { ProductFactory } from '../factories/product.factory'
 import { Op } from 'sequelize'
 
-beforeAll(async () => {
-    await sequelizeService.initTestDB()
+let testShop
+beforeEach(async () => {
+    testShop = await Shop.create({
+        name: 'Test shop',
+        email: 'testShop@gmail.com',
+    })
 })
 
-afterAll(async () => {
-    await sequelizeService.close()
+afterEach(async () => {
+    await Earphone.truncate({ cascade: true, restartIdentity: true })
+    await Product.truncate({ cascade: true, restartIdentity: true })
+    await Shop.truncate({ cascade: true, restartIdentity: true })
 })
 
 describe('Product Repository', async () => {
     // After all tests in the Product Repository suite
-    let testShop
-    beforeEach(async () => {
-        testShop = await Shop.create({
-            name: 'Test shop',
-            email: 'testShop@gmail.com',
-        })
-    })
 
-    afterEach(async () => {
-        await Shop.truncate({ cascade: true })
-        await Product.truncate({ cascade: true })
-    })
     describe('getDraftProductForShop', () => {
         it('should return all the draft products', async () => {
             const product = await ProductFactory.create('Earphone', {
@@ -167,7 +162,7 @@ describe('Product Repository', async () => {
             })
 
             const products = await ProductRepository.fetchAllPublishProducts()
-            expect(products.length).toBe(2)
+            expect(products.length).toBe(1)
         })
     })
 

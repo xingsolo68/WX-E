@@ -1,24 +1,14 @@
-import {
-    describe,
-    it,
-    expect,
-    afterAll,
-    beforeAll,
-    beforeEach,
-    afterEach,
-} from 'vitest'
-import sequelizeService from '../../services/sequelize.service'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import ProductService from '../../services/product.service'
 import { Earphone, Product, Shop } from '../../models'
 import slugify from 'slugify'
 
-beforeAll(async () => {
-    await sequelizeService.initTestDB()
+afterEach(async () => {
+    await Earphone.truncate({ cascade: true, restartIdentity: true })
+    await Product.truncate({ cascade: true, restartIdentity: true })
+    await Shop.truncate({ cascade: true, restartIdentity: true })
 })
 
-afterAll(async () => {
-    await sequelizeService.close()
-})
 describe('Product Service', () => {
     let testShop
     beforeEach(async () => {
@@ -28,10 +18,6 @@ describe('Product Service', () => {
         })
     })
 
-    afterEach(async () => {
-        await Shop.truncate({ cascade: true })
-        await Product.truncate({ cascade: true })
-    })
     it('create a new product', async () => {
         const productData = await ProductService.create('Earphone', {
             name: 'Jabra Elite 75',
