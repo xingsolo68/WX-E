@@ -10,15 +10,11 @@ afterEach(async () => {
 })
 
 describe('Product Service', () => {
-    let testShop
-    beforeEach(async () => {
-        testShop = await Shop.create({
+    it('create a new product', async () => {
+        const testShop = await Shop.create({
             name: 'Test shop',
             email: 'testShop@gmail.com',
         })
-    })
-
-    it('create a new product', async () => {
         const productData = await ProductService.create('Earphone', {
             name: 'Jabra Elite 75',
             description: 'A very good product',

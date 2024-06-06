@@ -15,7 +15,7 @@ productRoutes.patch(
 )
 productRoutes.patch(
     '/:productId/unpublished',
-    ProductController.handlePublishProduct
+    ProductController.handleUnpublishProduct
 )
 
 export { productRoutes }

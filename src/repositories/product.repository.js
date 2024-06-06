@@ -47,7 +47,7 @@ class ProductRepository {
     static async publishProducts(shopId, productIds) {
         const ids = Array.isArray(productIds) ? productIds : [productIds]
 
-        const [affectedRows, _] = await Product.update(
+        const [affectedRows, b] = await Product.update(
             { isPublished: true, isDraft: false },
             {
                 where: {

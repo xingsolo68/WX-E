@@ -1,5 +1,4 @@
 import ProductService from '../services/product.service'
-import { BadRequestError, ValidationError } from '../utils/ApiError'
 import ProductRepository from '../repositories/product.repository'
 
 export class ProductController {
@@ -20,6 +19,7 @@ export class ProductController {
 
             return res.status(200).json(product)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
@@ -33,36 +33,41 @@ export class ProductController {
 
             return res.status(200).json(draftProducts)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
 
     static async handlePublishProduct(req, res, next) {
         try {
-            const { productId, shopId } = req.body
+            const { productId } = req.params
+            const shopId = req.headers['shop-id']
 
             const updatedProduct = await ProductRepository.publishProducts(
                 shopId,
                 productId
             )
 
-            return updatedProduct
+            return res.status(200).json(updatedProduct)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
 
     static async handleUnpublishProduct(req, res, next) {
         try {
-            const { productId, shopId } = req.body
+            const { productId } = req.params
+            const shopId = req.headers['shop-id']
 
-            const updatedProduct = await ProductRepository.publishProducts(
+            const updatedProduct = await ProductRepository.unpublishProducts(
                 shopId,
                 productId
             )
 
-            return updatedProduct
+            return res.status(200).json(updatedProduct)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
@@ -76,6 +81,7 @@ export class ProductController {
 
             return res.status(200).json(publishedProducts)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
@@ -84,8 +90,9 @@ export class ProductController {
         try {
             const products = await ProductRepository.fetchAllPublishProducts()
 
-            return products
+            return res.status(200).json(products)
         } catch (error) {
+            console.log(error)
             next(error)
         }
     }
