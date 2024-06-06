@@ -8,8 +8,9 @@
     "type": "module",
     "scripts": {
         "dev": "yarn vite-node -w src/index.js",
-        "test:dbSetup": "npx sequelize-cli db:migrate",
-        "test": "vitest"
+        "test:dbSetup": "npx sequelize-cli db:migrate --env test",
+        "test:dbTeardown": "npx sequelize-cli db:migrate:undo:all --env test",
+        "test": "yarn test:dbSetup && vitest && yarn test:dbTeardown"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.310.0",

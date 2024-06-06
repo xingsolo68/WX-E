@@ -73,11 +73,14 @@ class Product extends Model {
         this.hasOne(models.Headphone, {
             foreignKey: 'productId',
         })
-        this.hasMany(models.ProductItem, {
-            foreignKey: 'productId',
-        })
         this.belongsTo(models.Shop, {
             foreignKey: 'shopId',
+        })
+        this.belongsToMany(models.Discount, {
+            through: 'ProductDiscount',
+            foreignKey: 'product_id',
+            otherKey: 'discount_id',
+            as: 'discounts',
         })
     }
 }
