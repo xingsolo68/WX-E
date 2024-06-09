@@ -27,6 +27,10 @@ class Discount extends Model {
                     type: DataTypes.NUMBER,
                     required: true,
                 },
+                maxValue: {
+                    type: DataTypes.NUMBER,
+                    required: true,
+                },
                 code: {
                     type: DataTypes.STRING,
                     required: true,
@@ -84,3 +88,5 @@ class Discount extends Model {
         })
     }
 }
+
+export default Discount

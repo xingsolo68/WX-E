@@ -28,7 +28,6 @@ describe('(POST) /api/product', () => {
                 },
             })
 
-        console.log(response)
         expect(response.status).toBe(200)
         expect(response.body).toEqual({
             id: 1,
