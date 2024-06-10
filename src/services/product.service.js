@@ -1,8 +1,9 @@
 import { PRODUCT_TYPE } from '../constants/product'
 import BadRequestError from '../errors/BadRequestError'
-import { Product, Earphone, Headphone, Speaker } from '../models/'
+import { Product, Earphone, Headphone, Speaker, Inventory } from '../models/'
 import Product from '../models/Product'
 import { omit, pick } from 'lodash'
+import { InventoryRepository } from '../repositories/inventory.repository'
 
 class ProductService {
     // Product factory
@@ -32,6 +33,7 @@ export class ProductEntity {
         description,
         attributes,
         shopId,
+        quantity,
         isDraft = true,
         isPublished = false,
     }) {
@@ -44,12 +46,33 @@ export class ProductEntity {
         this.shopId = shopId
         this.isDraft = isDraft
         this.isPublished = isPublished
+        this.quantity = quantity
     }
 
     async save() {
-        return await Product.create(omit(this, ['attributes']), {
-            attributes: ['name', 'price', 'description'],
-        })
+        const newProduct = await Product.create(
+            pick(this, [
+                'name',
+                'thumbnail',
+                'type',
+                'description',
+                'shopId',
+                'isDraft',
+                'isPublished',
+            ]),
+            {
+                attributes: ['name', 'price', 'description'],
+            }
+        )
+        if (newProduct) {
+            await InventoryRepository.insert({
+                productId: newProduct.id,
+                shopId: this.shopId,
+                stock: this.quantity,
+            })
+        }
+
+        return newProduct
     }
 }
 

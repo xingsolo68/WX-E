@@ -1,7 +1,7 @@
 import { BadRequestError } from '../errors/BadRequestError'
 import Discount from '../models/Discount'
 
-class DiscountService {
+export class DiscountService {
     static async createDiscountCode(payload) {
         const {
             code,
@@ -48,6 +48,16 @@ class DiscountService {
             minOrderValue,
             productIds,
             appliesTo,
+            name,
+            description,
+            type,
+            value,
+            maxValue,
+            maxUses,
+            usesCount,
+            maxUsesPerUser,
         })
+
+        return discount
     }
 }

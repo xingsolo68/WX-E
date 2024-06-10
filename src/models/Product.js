@@ -54,7 +54,11 @@ class Product extends Model {
                 tableName: 'Product', //Define table name
                 hooks: {
                     beforeSave: (product, options) => {
-                        product.slug = slugify(product.name)
+                        console.log(
+                            '=========================',
+                            slugify(product.name, { lower: true })
+                        )
+                        product.slug = slugify(product.name, { lower: true })
                     },
                 },
             }
@@ -71,6 +75,9 @@ class Product extends Model {
             foreignKey: 'productId',
         })
         this.hasOne(models.Headphone, {
+            foreignKey: 'productId',
+        })
+        this.hasOne(models.Inventory, {
             foreignKey: 'productId',
         })
         this.belongsTo(models.Shop, {

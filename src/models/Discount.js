@@ -1,5 +1,5 @@
 import { required } from 'joi'
-import { DataTypes } from 'sequelize'
+import { Model, DataTypes } from 'sequelize'
 
 class Discount extends Model {
     static init(sequelize) {
@@ -24,11 +24,11 @@ class Discount extends Model {
                     defaultValue: 'fixed_amount',
                 },
                 value: {
-                    type: DataTypes.NUMBER,
+                    type: DataTypes.INTEGER,
                     required: true,
                 },
                 maxValue: {
-                    type: DataTypes.NUMBER,
+                    type: DataTypes.INTEGER,
                     required: true,
                 },
                 code: {
@@ -52,14 +52,14 @@ class Discount extends Model {
                     required: true,
                 },
                 userUses: {
-                    type: DataTypes.ARRAY(DataTypes.NUMBER),
+                    type: DataTypes.ARRAY(DataTypes.JSONB),
                 },
                 maxUsesPerUser: {
                     type: DataTypes.INTEGER,
                     required: true,
                 },
                 minOrderValue: {
-                    type: DataTypes.NUMBER,
+                    type: DataTypes.STRING,
                     required: true,
                 },
                 isActive: {

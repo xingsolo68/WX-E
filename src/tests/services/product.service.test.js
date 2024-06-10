@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import ProductService from '../../services/product.service'
-import { Earphone, Product, Shop } from '../../models'
+import { Earphone, Inventory, Product, Shop } from '../../models'
 import slugify from 'slugify'
 
 afterEach(async () => {
@@ -27,6 +27,7 @@ describe('Product Service', () => {
                 size: 'M',
                 material: 'Vinyl',
             },
+            quantity: 123,
         })
 
         // Assert
@@ -50,6 +51,10 @@ describe('Product Service', () => {
         expect(createdEarphone.brand).toBe('Jabra')
         expect(createdEarphone.size).toBe('M')
         expect(createdEarphone.material).toBe('Vinyl')
+
+        const createdInventory = await Inventory.findByPk(createdProduct.id)
+        expect(createdInventory).toBeDefined()
+        expect(createdInventory).toBe(123)
 
         // Expect new records will be created inside test database too
     })
