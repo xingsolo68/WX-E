@@ -66,6 +66,9 @@ class Discount extends Model {
                     type: DataTypes.BOOLEAN,
                     defaultValue: true,
                 },
+                appliesTo: {
+                    type: DataTypes.ENUM('all', 'specific'),
+                },
             },
             {
                 sequelize,
@@ -84,7 +87,6 @@ class Discount extends Model {
             through: 'ProductDiscount',
             foreignKey: 'discount_id',
             otherKey: 'product_id',
-            as: 'appliedTo',
         })
     }
 }

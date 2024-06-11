@@ -54,6 +54,7 @@ export class ProductEntity {
             pick(this, [
                 'name',
                 'thumbnail',
+                'price',
                 'type',
                 'description',
                 'shopId',

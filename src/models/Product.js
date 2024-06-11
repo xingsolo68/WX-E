@@ -87,7 +87,6 @@ class Product extends Model {
             through: 'ProductDiscount',
             foreignKey: 'product_id',
             otherKey: 'discount_id',
-            as: 'discounts',
         })
     }
 }

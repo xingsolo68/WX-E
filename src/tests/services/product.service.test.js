@@ -40,7 +40,9 @@ describe('Product Service', () => {
         expect(createdProduct.description).toBe(productData.description)
         expect(createdProduct.price).toBe(parseFloat(productData.price))
         expect(createdProduct.type).toBe(productData.type)
-        expect(createdProduct.slug).toBe(slugify(productData.name))
+        expect(createdProduct.slug).toBe(
+            slugify(productData.name, { lower: true })
+        )
         expect(createdProduct.shopId).toBe(testShop.id)
 
         // Check if the earphone attributes are created in the Earphone table
@@ -54,7 +56,7 @@ describe('Product Service', () => {
 
         const createdInventory = await Inventory.findByPk(createdProduct.id)
         expect(createdInventory).toBeDefined()
-        expect(createdInventory).toBe(123)
+        expect(createdInventory.stock).toBe(123)
 
         // Expect new records will be created inside test database too
     })

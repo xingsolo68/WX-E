@@ -20,11 +20,11 @@ class ProductRepository {
     }
 
     static async queryProducts({
-        limit = 10,
-        page = 1,
         filter = {},
         select = [],
         order = [],
+        limit = 10,
+        page = 1,
     } = {}) {
         const offset = (page - 1) * limit
 
