@@ -3,6 +3,7 @@ import { BadRequestError, NotFoundError } from '../errors/BadRequestError'
 import { Product } from '../models'
 import Discount from '../models/Discount'
 import ProductRepository from '../repositories/product.repository'
+import { DiscountRepository } from '../repositories/discount.repository'
 
 export class DiscountService {
     static async createDiscountCode(payload) {
@@ -123,5 +124,14 @@ export class DiscountService {
                 select: ['name'],
             })
         }
+    }
+
+    static async getAllDiscountCodeByShop(shopId) {
+        const discounts = await DiscountRepository.findAllDiscountCode({
+            filter: { shopId },
+            select: ['name', 'code', 'type', 'startDate', 'maxValue'],
+        })
+
+        return discounts
     }
 }
