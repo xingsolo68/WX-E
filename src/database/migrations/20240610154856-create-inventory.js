@@ -11,7 +11,7 @@ module.exports = {
                 primaryKey: true,
                 allowNull: false,
                 references: {
-                    model: 'Products', // Make sure this matches the actual table name
+                    model: 'Product', // Make sure this matches the actual table name
                     key: 'id',
                 },
                 onUpdate: 'CASCADE',

@@ -59,7 +59,7 @@ class Discount extends Model {
                     required: true,
                 },
                 minOrderValue: {
-                    type: DataTypes.STRING,
+                    type: DataTypes.INTEGER,
                     required: true,
                 },
                 isActive: {
@@ -83,10 +83,13 @@ class Discount extends Model {
     }
 
     static associate(models) {
-        this.belongsToMany(models.Discount, {
+        this.belongsToMany(models.Product, {
             through: 'ProductDiscount',
-            foreignKey: 'discount_id',
-            otherKey: 'product_id',
+            foreignKey: 'discountId',
+            otherKey: 'productId',
+        })
+        this.belongsTo(models.Shop, {
+            foreignKey: 'shopId',
         })
     }
 }

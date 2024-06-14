@@ -22,7 +22,7 @@ export class DiscountService {
             value,
             maxValue,
             maxUses,
-            usesCount,
+            useCount,
             maxUsesPerUser,
         } = payload
 
@@ -44,7 +44,7 @@ export class DiscountService {
             },
         })
 
-        if (!foundDiscount) {
+        if (foundDiscount) {
             throw new BadRequestError('Discount code already exists')
         }
 
@@ -62,15 +62,18 @@ export class DiscountService {
             value,
             maxValue,
             maxUses,
-            usesCount,
+            useCount,
             maxUsesPerUser,
+            shopId,
         })
 
         return discount
     }
 
     static async updateDiscountCode(code, shopId, updatedData) {
-        const foundDiscount = await Discount.findOne({ code, shopId })
+        const foundDiscount = await Discount.findOne({
+            where: { code, shopId },
+        })
 
         if (!foundDiscount) {
             throw new BadRequestError('Discount code not exist')
@@ -124,6 +127,8 @@ export class DiscountService {
                 select: ['name'],
             })
         }
+
+        return products
     }
 
     static async getAllDiscountCodeByShop(shopId) {

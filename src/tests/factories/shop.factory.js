@@ -7,7 +7,7 @@ export class ShopFactory {
         const defaultFields = {
             email: faker.internet.email(),
             password: faker.internet.password(),
-            name: faker.company.companyName(),
+            name: faker.company.name(),
             isVerify: false,
         }
 

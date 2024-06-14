@@ -55,6 +55,9 @@ class Shop extends Model {
         this.hasMany(models.Product, {
             foreignKey: 'shopId',
         })
+        this.hasMany(models.Discount, {
+            foreignKey: 'shopId',
+        })
     }
 }
 
