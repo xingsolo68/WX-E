@@ -1,26 +1,31 @@
-import { describe, beforeEach, expect, afterEach, it, vi } from 'vitest'
-import { Discount, Earphone, Product, Shop } from '../../models'
+import {
+    describe,
+    beforeEach,
+    expect,
+    afterEach,
+    afterAll,
+    it,
+    vi,
+} from 'vitest'
+import { Discount } from '../../models'
 import { DiscountService } from '../../services/discount.service'
 import { ShopFactory } from '../factories/shop.factory'
 import { BadRequestError } from '../../errors/BadRequestError'
+import sequelizeService from '../../services/sequelize.service'
 
 const mockDate = (date) => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(date))
 }
 
-afterEach(async () => {
-    await Discount.truncate({ cascade: true, restartIdentity: true })
-    await Earphone.truncate({ cascade: true, restartIdentity: true })
-    await Product.truncate({ cascade: true, restartIdentity: true })
-    await Shop.truncate({ cascade: true, restartIdentity: true })
-})
-
 describe('Discount service', () => {
-    describe('createDiscountCode', () => {
-        let payload
-        let testShop
+    let payload
+    let testShop
 
+    afterAll(async () => {
+        await sequelizeService.clean()
+    })
+    describe('createDiscountCode', () => {
         beforeEach(async () => {
             mockDate('2023-06-01')
             testShop = await ShopFactory.create({})

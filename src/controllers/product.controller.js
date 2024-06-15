@@ -4,20 +4,13 @@ import ProductRepository from '../repositories/product.repository'
 export class ProductController {
     static async handleCreate(req, res, next) {
         try {
+            const shopId = req.headers['shop-id']
             const product = await ProductService.create('Earphone', {
-                name: 'Test Product',
-                price: 100,
-                thumbnail: 'test.jpg',
-                description: 'Test Description',
-                type: 'Earphone',
-                attributes: {
-                    brand: 'Jabra',
-                    material: 'Leather',
-                    size: 'XL',
-                },
+                shopId,
+                ...req.body,
             })
 
-            return res.status(200).json(product)
+            return res.status(201).json(product)
         } catch (error) {
             console.log(error)
             next(error)

@@ -65,6 +65,7 @@ export class ProductEntity {
                 attributes: ['name', 'price', 'description'],
             }
         )
+
         if (newProduct) {
             await InventoryRepository.insert({
                 productId: newProduct.id,
@@ -124,6 +125,7 @@ export class HeadphoneEntity extends ProductEntity {
     async createHeadphone() {
         const newProduct = await super.save()
         if (!newProduct) throw new BadRequestError('Create new product error')
+
         const newHeadphone = await Headphone.create({
             productId: newProduct.id,
             ...this.attributes,

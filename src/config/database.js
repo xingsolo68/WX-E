@@ -11,6 +11,7 @@ const commonConfig = {
     define: {
         timestamps: true,
     },
+    logging: false,
 }
 
 const development = {

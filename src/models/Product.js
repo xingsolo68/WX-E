@@ -54,10 +54,7 @@ class Product extends Model {
                 tableName: 'Product', //Define table name
                 hooks: {
                     beforeSave: (product, options) => {
-                        console.log(
-                            '=========================',
-                            slugify(product.name, { lower: true })
-                        )
+                        slugify(product.name, { lower: true })
                         product.slug = slugify(product.name, { lower: true })
                     },
                 },

@@ -1,45 +1,38 @@
-import {
-    describe,
-    it,
-    expect,
-    afterAll,
-    beforeEach,
-    beforeAll,
-    test,
-    afterEach,
-} from 'vitest'
+import { describe, it, expect, afterAll, beforeAll } from 'vitest'
 import ProductRepository from '../../repositories/product.repository'
 import sequelizeService from '../../services/sequelize.service'
-import { Shop, Product, Earphone } from '../../models'
+import { Product, Earphone } from '../../models'
 import { ProductFactory } from '../factories/product.factory'
 import { Op } from 'sequelize'
-
-let testShop
-beforeEach(async () => {
-    testShop = await Shop.create({
-        name: 'Test shop',
-        email: 'testShop@gmail.com',
-    })
-})
-
-afterEach(async () => {
-    await Earphone.truncate({ cascade: true, restartIdentity: true })
-    await Product.truncate({ cascade: true, restartIdentity: true })
-    await Shop.truncate({ cascade: true, restartIdentity: true })
-})
+import { ShopFactory } from '../factories/shop.factory'
 
 describe('Product Repository', async () => {
+    let testShop
     // After all tests in the Product Repository suite
+    beforeAll(async () => {
+        testShop = await ShopFactory.create()
+    })
+
+    afterAll(async () => {
+        await sequelizeService.clean()
+    })
+
+    describe('fetchAllPublishProducts', async () => {
+        it('should return all publish products from all shops', async () => {
+            await ProductFactory.create('Earphone', {
+                isPublished: true,
+            })
+
+            const products = await ProductRepository.fetchAllPublishProducts()
+            expect(products.length).toBe(1)
+        })
+    })
 
     describe('getDraftProductForShop', () => {
         it('should return all the draft products', async () => {
             const product = await ProductFactory.create('Earphone', {
-                shopId: testShop.id,
                 isDraft: true,
-            })
-            await ProductFactory.create('Earphone', {
                 shopId: testShop.id,
-                isDraft: false,
             })
 
             const draftProducts = await ProductRepository.fetchDraftProducts(
@@ -57,12 +50,8 @@ describe('Product Repository', async () => {
     describe('getPublishedProductsForShop', async () => {
         it('should return all the published products', async () => {
             const product = await ProductFactory.create('Earphone', {
-                shopId: testShop.id,
                 isPublished: true,
-            })
-            await ProductFactory.create('Earphone', {
                 shopId: testShop.id,
-                isPublished: false,
             })
 
             const publishedProducts =
@@ -149,20 +138,6 @@ describe('Product Repository', async () => {
                 expect(product.isDraft).toBe(true)
                 expect(product.isPublished).toBe(false)
             })
-        })
-    })
-
-    describe('fetchAllPublishProducts', async () => {
-        it('should return all publish products from all shops', async () => {
-            await ProductFactory.create('Earphone', {
-                isPublished: true,
-            })
-            await ProductFactory.create('Earphone', {
-                isPublished: false,
-            })
-
-            const products = await ProductRepository.fetchAllPublishProducts()
-            expect(products.length).toBe(1)
         })
     })
 

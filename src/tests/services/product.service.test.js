@@ -1,15 +1,14 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterAll } from 'vitest'
 import ProductService from '../../services/product.service'
 import { Earphone, Inventory, Product, Shop } from '../../models'
 import slugify from 'slugify'
-
-afterEach(async () => {
-    await Earphone.truncate({ cascade: true, restartIdentity: true })
-    await Product.truncate({ cascade: true, restartIdentity: true })
-    await Shop.truncate({ cascade: true, restartIdentity: true })
-})
+import sequelizeService from '../../services/sequelize.service'
 
 describe('Product Service', () => {
+    afterAll(async () => {
+        await sequelizeService.clean()
+    })
+
     it('create a new product', async () => {
         const testShop = await Shop.create({
             name: 'Test shop',

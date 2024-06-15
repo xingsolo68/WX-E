@@ -48,6 +48,7 @@ module.exports = {
             },
             shopId: {
                 type: Sequelize.INTEGER,
+                allowNull: false,
                 references: {
                     model: 'Shop',
                     key: 'id',

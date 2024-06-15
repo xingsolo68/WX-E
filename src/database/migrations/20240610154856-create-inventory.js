@@ -39,6 +39,14 @@ module.exports = {
                 allowNull: false,
                 defaultValue: Sequelize.fn('NOW'),
             },
+            shopId: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Shop',
+                    key: 'id',
+                },
+            },
         })
     },
 

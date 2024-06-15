@@ -58,6 +58,16 @@ const sequelizeService = {
             throw error
         }
     },
+
+    clean: async function () {
+        try {
+            await connection.truncate({ cascade: true, restartIdentity: true })
+            logger.info('[SEQUELIZE] Database connection closed')
+        } catch (error) {
+            logger.warn('[SEQUELIZE] Error during database connection clear')
+            throw error
+        }
+    },
 }
 
 export default sequelizeService

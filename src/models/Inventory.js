@@ -5,9 +5,14 @@ class Inventory extends Model {
     static init(sequelize) {
         super.init(
             {
+                // id: {
+                //     primaryKey: True,
+                //     type: DataTypes.INTEGER,
+                //     allowNull: false,
+                // },
                 productId: {
-                    type: DataTypes.INTEGER,
                     primaryKey: true,
+                    type: DataTypes.INTEGER,
                     allowNull: false,
                     references: {
                         model: 'Product',
