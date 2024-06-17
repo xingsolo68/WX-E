@@ -2,15 +2,15 @@ import {
     describe,
     beforeEach,
     expect,
-    afterEach,
+    beforeAll,
     afterAll,
     it,
     vi,
 } from 'vitest'
 import { Discount } from '../../models'
 import { DiscountService } from '../../services/discount.service'
-import { ShopFactory } from '../factories/shop.factory'
 import { BadRequestError } from '../../errors/BadRequestError'
+import { ShopFactory, DiscountFactory, ProductFactory } from '../factories'
 import sequelizeService from '../../services/sequelize.service'
 
 const mockDate = (date) => {
@@ -179,6 +179,95 @@ describe('Discount service', () => {
                     updatedData
                 )
             ).rejects.toThrow(BadRequestError)
+        })
+    })
+
+    describe('getAllDiscountCodeWithProducts', () => {
+        let testShop
+        let testDiscount
+
+        beforeAll(async () => {
+            testShop = await ShopFactory.create()
+        })
+
+        afterAll(async () => {
+            await sequelizeService.clean()
+        })
+
+        it.only('should return products with "all" appliesTo discount', async () => {
+            const code = 'DISCOUNT_CODE'
+            const userId = 1
+
+            testDiscount = await DiscountFactory.create({
+                code,
+                shopId: testShop.id,
+                isActive: true,
+                appliesTo: 'all',
+            })
+
+            await ProductFactory.create('Earphone', {
+                shopId: testShop.id,
+                isPublished: true,
+            })
+            await ProductFactory.create('Earphone', {
+                shopId: testShop.id,
+                isPublished: true,
+            })
+
+            const result = await DiscountService.getAllDiscountCodeWithProducts(
+                code,
+                testShop.id,
+                userId
+            )
+
+            expect(result).toHaveLength(2)
+            expect(result[0]).toHaveProperty('name')
+        })
+
+        it('should return products with specific appliesTo discount', async () => {
+            const code = 'DISCOUNT_CODE'
+            const userId = 1
+
+            const product1 = await ProductFactory.create('Earphone', {
+                shopId: testShop.id,
+                isPublished: true,
+            })
+            const product2 = await ProductFactory.create('Earphone', {
+                shopId: testShop.id,
+                isPublished: true,
+            })
+
+            testDiscount = await DiscountFactory.create({
+                code,
+                shopId: testShop.id,
+                isActive: true,
+                appliesTo: 'specific',
+            })
+
+            await testDiscount.addProduct(product1)
+            await testDiscount.addProduct(product2)
+
+            const result = await DiscountService.getAllDiscountCodeWithProducts(
+                code,
+                testShop.id,
+                userId
+            )
+
+            expect(result).toHaveLength(2)
+            expect(result[0]).toHaveProperty('name')
+        })
+
+        it('should throw NotFoundError if discount is not found or inactive', async () => {
+            const code = 'INVALID_CODE'
+            const userId = 1
+
+            await expect(
+                DiscountService.getAllDiscountCodeWithProducts(
+                    code,
+                    testShop.id,
+                    userId
+                )
+            ).rejects.toThrow('Discount not exist!')
         })
     })
 })

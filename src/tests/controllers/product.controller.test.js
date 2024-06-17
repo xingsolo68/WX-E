@@ -111,6 +111,8 @@ describe('ProductController', () => {
                 shopId: shop.id,
             })
 
+            debugger
+
             const response = await supertest(expressService.getServer())
                 .get('/api/products/published/all')
                 .set('shop-id', shop.id)

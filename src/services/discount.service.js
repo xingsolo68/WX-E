@@ -104,6 +104,8 @@ export class DiscountService {
         const { appliesTo } = foundDiscount
         let products
 
+        console.log('========================foundDiscount', foundDiscount)
+
         if (appliesTo === 'all') {
             products = await ProductRepository.queryProducts({
                 filter: {
@@ -139,4 +141,6 @@ export class DiscountService {
 
         return discounts
     }
+
+    static async getDiscountAmount({ codeId, userId, shopId, products }) {}
 }
