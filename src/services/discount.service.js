@@ -4,6 +4,7 @@ import { Product } from '../models'
 import Discount from '../models/Discount'
 import ProductRepository from '../repositories/product.repository'
 import { DiscountRepository } from '../repositories/discount.repository'
+import { NotFoundError } from '../errors'
 
 export class DiscountService {
     static async createDiscountCode(payload) {
@@ -30,6 +31,7 @@ export class DiscountService {
             new Date() < new Date(startDate) ||
             new Date() > new Date(endDate)
         ) {
+            console.log('=====================')
             throw new BadRequestError('Discount code has expired!')
         }
 
@@ -104,8 +106,6 @@ export class DiscountService {
         const { appliesTo } = foundDiscount
         let products
 
-        console.log('========================foundDiscount', foundDiscount)
-
         if (appliesTo === 'all') {
             products = await ProductRepository.queryProducts({
                 filter: {
@@ -142,5 +142,86 @@ export class DiscountService {
         return discounts
     }
 
-    static async getDiscountAmount({ codeId, userId, shopId, products }) {}
+    static async getDiscountAmount({ code, userId, shopId, products }) {
+        const foundDiscount = await Discount.findOne({
+            where: {
+                code,
+                shopId,
+            },
+        })
+
+        if (!foundDiscount) throw new NotFoundError('Discount does not exist')
+
+        const {
+            isActive,
+            maxUses,
+            startDate,
+            endDate,
+            minOrderValue,
+            type,
+            value,
+        } = foundDiscount
+
+        if (!isActive) {
+            throw new BadRequestError('Discount is not active')
+        }
+
+        if (
+            new Date() < new Date(startDate) ||
+            new Date() > new Date(endDate)
+        ) {
+            throw new NotFoundError('Discount has been expired')
+        }
+
+        const totalOrderValue = products.reduce(
+            (acc, product) => acc + product.quantity * product.price,
+            0
+        )
+
+        if (totalOrderValue < minOrderValue) {
+            console.log(totalOrderValue, minOrderValue)
+            throw new BadRequestError(
+                'The orders has not reached min order value'
+            )
+        }
+
+        const discountAmount =
+            type === 'fixed_amount' ? value : totalOrderValue * (value / 100)
+
+        return discountAmount
+    }
+
+    static async deleteDiscountCode({ code, shopId }) {
+        const foundDiscount = await Discount.findOne({
+            where: {
+                shopId,
+                code,
+            },
+        })
+
+        if (!foundDiscount) {
+            throw new NotFoundError('Discount does not exist')
+        }
+
+        return await foundDiscount.destroy()
+    }
+
+    static async cancelDiscountCode({ code, shopId }) {
+        const foundDiscount = await Discount.findOne({
+            where: {
+                shopId,
+                code,
+            },
+        })
+
+        if (!foundDiscount) {
+            throw new NotFoundError('Discount does not exist')
+        }
+
+        const result = await foundDiscount.update({
+            isActive: false,
+        })
+
+        return result
+    }
 }

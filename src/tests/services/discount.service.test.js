@@ -9,7 +9,7 @@ import {
 } from 'vitest'
 import { Discount } from '../../models'
 import { DiscountService } from '../../services/discount.service'
-import { BadRequestError } from '../../errors/BadRequestError'
+import { BadRequestError, NotFoundError } from '../../errors'
 import { ShopFactory, DiscountFactory, ProductFactory } from '../factories'
 import sequelizeService from '../../services/sequelize.service'
 
@@ -194,7 +194,7 @@ describe('Discount service', () => {
             await sequelizeService.clean()
         })
 
-        it.only('should return products with "all" appliesTo discount', async () => {
+        it('should return products with "all" appliesTo discount', async () => {
             const code = 'DISCOUNT_CODE'
             const userId = 1
 
@@ -268,6 +268,207 @@ describe('Discount service', () => {
                     userId
                 )
             ).rejects.toThrow('Discount not exist!')
+        })
+    })
+
+    describe('getDiscountAmount', () => {
+        let userId, testDiscount
+
+        beforeEach(async () => {
+            userId = 1
+            testShop = await ShopFactory.create({})
+            mockDate('2023-06-01')
+
+            testDiscount = await DiscountFactory.create({
+                code: 'DISCOUNT2023',
+                shopId: testShop.id,
+                isActive: true,
+                maxUses: 10,
+                startDate: new Date('2023-01-01'),
+                endDate: new Date('2023-12-31'),
+                minOrderValue: 100,
+                type: 'percentage',
+                value: 10,
+            })
+        })
+
+        it('should throw an error if discount code does not exist', async () => {
+            const code = 'INVALID_CODE'
+            const products = []
+
+            await expect(
+                DiscountService.getDiscountAmount({
+                    code,
+                    userId,
+                    shopId: testShop.id,
+                    products,
+                })
+            ).rejects.toThrow(NotFoundError)
+        })
+
+        it('should throw an error if discount is inactive', async () => {
+            testDiscount.isActive = false
+            await testDiscount.save()
+
+            const code = testDiscount.code
+            const products = []
+
+            await expect(
+                DiscountService.getDiscountAmount({
+                    code,
+                    userId,
+                    shopId: testShop.id,
+                    products,
+                })
+            ).rejects.toThrow(BadRequestError)
+        })
+
+        it('should throw an error if discount has expired', async () => {
+            testDiscount.startDate = new Date('2020-01-01')
+            testDiscount.endDate = new Date('2020-12-31')
+            await testDiscount.save()
+
+            const code = testDiscount.code
+            const products = []
+
+            await expect(
+                DiscountService.getDiscountAmount({
+                    code,
+                    userId,
+                    shopId: testShop.id,
+                    products,
+                })
+            ).rejects.toThrow(NotFoundError)
+        })
+
+        it('should throw an error if order value is below minimum order value', async () => {
+            testDiscount.startDate = new Date('2023-01-01')
+            testDiscount.endDate = new Date('2023-12-31')
+            await testDiscount.save()
+
+            const code = testDiscount.code
+            const products = [{ quantity: 1, price: 50 }]
+
+            await expect(
+                DiscountService.getDiscountAmount({
+                    code,
+                    userId,
+                    shopId: testShop.id,
+                    products,
+                })
+            ).rejects.toThrow(BadRequestError)
+        })
+
+        it('should return the correct discount amount for a percentage discount', async () => {
+            const code = testDiscount.code
+            const products = [{ quantity: 2, price: 60 }]
+
+            const discountAmount = await DiscountService.getDiscountAmount({
+                code,
+                userId,
+                shopId: testShop.id,
+                products,
+            })
+            expect(discountAmount).toBe(12)
+        })
+
+        it('should return the correct discount amount for a fixed amount discount', async () => {
+            testDiscount.type = 'fixed_amount'
+            testDiscount.value = 20
+            await testDiscount.save()
+
+            const code = testDiscount.code
+            const products = [{ quantity: 2, price: 60 }]
+
+            const discountAmount = await DiscountService.getDiscountAmount({
+                code,
+                userId,
+                shopId: testShop.id,
+                products,
+            })
+            expect(discountAmount).toBe(20)
+        })
+    })
+
+    describe('deleteDiscountCode', () => {
+        let testDiscount
+
+        beforeEach(async () => {
+            testShop = await ShopFactory.create({})
+
+            testDiscount = await DiscountFactory.create({
+                code: 'DISCOUNT2023',
+                shopId: testShop.id,
+                isActive: true,
+                startDate: new Date('2023-01-01'),
+                endDate: new Date('2023-12-31'),
+                minOrderValue: 100,
+                type: 'percentage',
+                value: 10,
+            })
+        })
+
+        it('should delete a discount code successfully', async () => {
+            await DiscountService.deleteDiscountCode({
+                code: testDiscount.code,
+                shopId: testShop.id,
+            })
+
+            const foundDiscount = await Discount.findOne({
+                where: { code: testDiscount.code, shopId: testShop.id },
+            })
+
+            expect(foundDiscount).toBeNull()
+        })
+
+        it('should throw an error if discount code does not exist', async () => {
+            await expect(
+                DiscountService.deleteDiscountCode({
+                    code: 'NON_EXISTING_CODE',
+                    shopId: testShop.id,
+                })
+            ).rejects.toThrow(NotFoundError)
+        })
+    })
+
+    describe('cancelDiscountCode', () => {
+        let testDiscount
+
+        beforeEach(async () => {
+            testShop = await ShopFactory.create({})
+
+            testDiscount = await DiscountFactory.create({
+                code: 'DISCOUNT2023',
+                shopId: testShop.id,
+                isActive: true,
+                startDate: new Date('2023-01-01'),
+                endDate: new Date('2023-12-31'),
+                minOrderValue: 100,
+                type: 'percentage',
+                value: 10,
+            })
+        })
+
+        it('should cancel a discount code successfully', async () => {
+            await DiscountService.cancelDiscountCode({
+                code: testDiscount.code,
+                shopId: testShop.id,
+            })
+
+            const foundDiscount = await Discount.findOne({
+                where: { code: testDiscount.code, shopId: testShop.id },
+            })
+
+            expect(foundDiscount.isActive).toBe(false)
+        })
+
+        it('should throw an error if discount code does not exist', async () => {
+            await expect(
+                DiscountService.cancelDiscountCode({
+                    code: 'NON_EXISTING_CODE',
+                    shopId: testShop.id,
+                })
+            ).rejects.toThrow(NotFoundError)
         })
     })
 })
