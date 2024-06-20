@@ -182,7 +182,7 @@ describe('Discount service', () => {
         })
     })
 
-    describe('getAllDiscountCodeWithProducts', () => {
+    describe.only('getAllDiscountCodeWithProducts', () => {
         let testShop
         let testDiscount
 
@@ -194,7 +194,7 @@ describe('Discount service', () => {
             await sequelizeService.clean()
         })
 
-        it('should return products with "all" appliesTo discount', async () => {
+        it("should return products with 'all' appliesTo discount", async () => {
             const code = 'DISCOUNT_CODE'
             const userId = 1
 
@@ -244,8 +244,8 @@ describe('Discount service', () => {
                 appliesTo: 'specific',
             })
 
-            await testDiscount.addProduct(product1)
-            await testDiscount.addProduct(product2)
+            await testDiscount.addProduct(product1.id)
+            await testDiscount.addProduct(product2.id)
 
             const result = await DiscountService.getAllDiscountCodeWithProducts(
                 code,
@@ -270,7 +270,6 @@ describe('Discount service', () => {
             ).rejects.toThrow('Discount not exist!')
         })
     })
-
     describe('getDiscountAmount', () => {
         let userId, testDiscount
 

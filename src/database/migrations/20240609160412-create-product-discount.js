@@ -3,7 +3,7 @@
 module.exports = {
     up: async (queryInterface, Sequelize) => {
         await queryInterface.createTable('ProductDiscount', {
-            product_id: {
+            productId: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
                 references: {
@@ -12,7 +12,7 @@ module.exports = {
                 },
                 onDelete: 'CASCADE',
             },
-            discount_id: {
+            discountId: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
                 references: {

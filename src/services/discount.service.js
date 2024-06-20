@@ -31,7 +31,6 @@ export class DiscountService {
             new Date() < new Date(startDate) ||
             new Date() > new Date(endDate)
         ) {
-            console.log('=====================')
             throw new BadRequestError('Discount code has expired!')
         }
 
@@ -90,7 +89,6 @@ export class DiscountService {
             where: {
                 code,
                 shopId,
-                isActive: false,
             },
             include: [
                 {
