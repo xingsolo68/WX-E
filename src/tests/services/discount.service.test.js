@@ -182,7 +182,7 @@ describe('Discount service', () => {
         })
     })
 
-    describe.only('getAllDiscountCodeWithProducts', () => {
+    describe('getAllDiscountCodeWithProducts', () => {
         let testShop
         let testDiscount
 
@@ -225,7 +225,7 @@ describe('Discount service', () => {
         })
 
         it('should return products with specific appliesTo discount', async () => {
-            const code = 'DISCOUNT_CODE'
+            const code = 'DISCOUNT_CODE2'
             const userId = 1
 
             const product1 = await ProductFactory.create('Earphone', {
