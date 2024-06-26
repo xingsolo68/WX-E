@@ -85,6 +85,11 @@ class Product extends Model {
             foreignKey: 'productId',
             otherKey: 'discountId',
         })
+        this.belongsToMany(models.Cart, {
+            through: models.CartItem,
+            foreignKey: 'productId',
+            otherKey: 'cartId',
+        })
     }
 }
 

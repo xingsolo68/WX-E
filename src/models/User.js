@@ -34,6 +34,9 @@ class User extends Model {
             through: 'UserAddress',
             foreignKey: 'userId',
         })
+        this.hasOne(models.Cart, {
+            foreignKey: 'userId',
+        })
     }
 
     checkPassword(password) {
