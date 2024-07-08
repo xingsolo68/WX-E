@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker'
 import bcrypt from 'bcryptjs'
 import Shop from '../../models/Shop' // Adjust the path as needed
-
 export class ShopFactory {
     static async create(overridedFields = {}) {
         const defaultFields = {

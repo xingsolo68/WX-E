@@ -3,7 +3,7 @@ import { Cart, CartItem, Product, sequelize } from '../models'
 export class CartService {
     static async addToCart({ userId, productId, quantity = 1 }) {
         try {
-            return await sequelize.transaction(async (t) => {
+            return await Cart.sequelize.transaction(async (t) => {
                 // Find or create the cart
                 const [cart, _] = await Cart.findOrCreate({
                     where: { userId },
@@ -39,14 +39,17 @@ export class CartService {
                 const updatedCart = await Cart.findByPk(cart.id, {
                     include: [
                         {
-                            model: CartItem,
-                            include: [Product],
+                            model: Product,
+                            through: {
+                                model: CartItem,
+                                as: 'cartItems',
+                            },
                         },
                     ],
                     transaction: t,
                 })
 
-                return { cart: updatedCart, cartItem }
+                return { cart: updatedCart }
             })
         } catch (error) {
             console.error('Error in addToCart:', error)
@@ -56,7 +59,7 @@ export class CartService {
 
     static async updateCartItemQuantity({ userId, productId, quantity }) {
         try {
-            return await sequelize.transaction(async (t) => {
+            return await Cart.sequelize.transaction(async (t) => {
                 // Find the user's cart
                 const cart = await Cart.findOne({
                     where: { userId },
@@ -93,8 +96,11 @@ export class CartService {
                 const updatedCart = await Cart.findByPk(cart.id, {
                     include: [
                         {
-                            model: CartItem,
-                            include: [Product],
+                            model: Product,
+                            through: {
+                                model: CartItem,
+                                as: 'cartItems',
+                            },
                         },
                     ],
                     transaction: t,
@@ -102,7 +108,6 @@ export class CartService {
 
                 return {
                     cart: updatedCart,
-                    cartItem: quantity > 0 ? cartItem : null,
                 }
             })
         } catch (error) {

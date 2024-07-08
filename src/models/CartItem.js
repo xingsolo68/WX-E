@@ -4,26 +4,21 @@ class CartItem extends Model {
     static init(sequelize) {
         super.init(
             {
-                id: {
-                    type: DataTypes.INTEGER,
-                    primaryKey: true,
-                    autoIncrement: true,
-                    allowNull: false,
-                },
                 cartId: {
                     type: DataTypes.INTEGER,
                     allowNull: false,
+                    primaryKey: true,
                 },
                 productId: {
                     type: DataTypes.INTEGER,
                     allowNull: false,
+                    primaryKey: true,
                 },
                 quantity: {
                     type: DataTypes.INTEGER,
                     allowNull: false,
                     defaultValue: 1,
                 },
-                // You can add more fields specific to the CartItem if needed
             },
             {
                 sequelize,

@@ -30,10 +30,6 @@ class User extends Model {
     }
 
     static associate(models) {
-        this.belongsToMany(models.Address, {
-            through: 'UserAddress',
-            foreignKey: 'userId',
-        })
         this.hasOne(models.Cart, {
             foreignKey: 'userId',
         })

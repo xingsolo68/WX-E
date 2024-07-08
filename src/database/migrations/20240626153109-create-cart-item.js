@@ -2,16 +2,11 @@
 
 module.exports = {
     up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('CartItem', {
-            id: {
-                type: Sequelize.INTEGER,
-                primaryKey: true,
-                autoIncrement: true,
-                allowNull: false,
-            },
+        await queryInterface.createTable('CartItems', {
             cartId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+                primaryKey: true,
                 references: {
                     model: 'Cart',
                     key: 'id',
@@ -22,6 +17,7 @@ module.exports = {
             productId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+                primaryKey: true,
                 references: {
                     model: 'Product',
                     key: 'id',
@@ -35,17 +31,17 @@ module.exports = {
                 defaultValue: 1,
             },
             createdAt: {
-                type: Sequelize.DATE,
                 allowNull: false,
+                type: Sequelize.DATE,
             },
             updatedAt: {
-                type: Sequelize.DATE,
                 allowNull: false,
+                type: Sequelize.DATE,
             },
         })
 
-        // Add a unique constraint to prevent duplicate cart items
-        await queryInterface.addConstraint('CartItem', {
+        // Add a unique constraint to prevent duplicate entries
+        await queryInterface.addConstraint('CartItems', {
             fields: ['cartId', 'productId'],
             type: 'unique',
             name: 'unique_cart_product',
@@ -53,6 +49,6 @@ module.exports = {
     },
 
     down: async (queryInterface, Sequelize) => {
-        await queryInterface.dropTable('CartItem')
+        await queryInterface.dropTable('CartItems')
     },
 }

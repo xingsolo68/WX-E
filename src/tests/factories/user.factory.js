@@ -1,6 +1,6 @@
 // UserFactory.js
 import { faker } from '@faker-js/faker'
-import { User } from '../models' // Adjust the import path as needed
+import User from '../../models/User' // Adjust the path as needed
 
 export class UserFactory {
     static async create(overrideFields = {}) {

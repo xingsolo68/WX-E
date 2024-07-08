@@ -1,3 +1,6 @@
 export { DiscountFactory } from './discount.factory'
 export { ShopFactory } from './shop.factory'
 export { ProductFactory } from './product.factory'
+export { UserFactory } from './user.factory'
+export { CartFactory } from './cart.factory'
+export { CartItemFactory } from './cartItem.factory'
