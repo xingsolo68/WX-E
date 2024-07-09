@@ -142,4 +142,78 @@ describe('CartService', () => {
             ).rejects.toThrow('Product not found in the cart')
         })
     })
+
+    describe('deleteUserCart', () => {
+        it('should remove a specific item from the user cart', async () => {
+            // First, add an item to the cart
+            await CartService.addToCart({
+                userId: testUser.id,
+                productId: testProduct.id,
+                quantity: 2,
+            })
+
+            // Now delete the item
+            const result = await CartService.deleteUserCart({
+                userId: testUser.id,
+                productId: testProduct.id,
+            })
+
+            expect(result.cart).toBeDefined()
+            expect(result.cart.Products).toHaveLength(0)
+            expect(result.message).toBe('Item successfully removed from cart')
+        })
+
+        it('should not affect other items in the cart', async () => {
+            // Add two items to the cart
+            await CartService.addToCart({
+                userId: testUser.id,
+                productId: testProduct.id,
+                quantity: 2,
+            })
+
+            const secondProduct = await ProductFactory.create('Headphone', {
+                shopId: testShop.id,
+                isPublished: true,
+            })
+            await CartService.addToCart({
+                userId: testUser.id,
+                productId: secondProduct.id,
+                quantity: 1,
+            })
+
+            // Delete one item
+            const result = await CartService.deleteUserCart({
+                userId: testUser.id,
+                productId: testProduct.id,
+            })
+
+            expect(result.cart.Products).toHaveLength(1)
+            expect(result.cart.Products[0].id).toBe(secondProduct.id)
+        })
+
+        it('should throw an error if cart is not found', async () => {
+            await expect(
+                CartService.deleteUserCart({
+                    userId: 999, // non-existent user
+                    productId: testProduct.id,
+                })
+            ).rejects.toThrow('Cart not found for this user')
+        })
+
+        it('should throw an error if product is not in the cart', async () => {
+            // First, create a cart for the user
+            await CartService.addToCart({
+                userId: testUser.id,
+                productId: testProduct.id,
+                quantity: 1,
+            })
+
+            await expect(
+                CartService.deleteUserCart({
+                    userId: testUser.id,
+                    productId: 999, // non-existent product
+                })
+            ).rejects.toThrow('Product not found in the cart')
+        })
+    })
 })

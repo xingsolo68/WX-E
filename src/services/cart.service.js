@@ -115,4 +115,55 @@ export class CartService {
             throw error
         }
     }
+
+    static async deleteUserCart({ userId, productId }) {
+        try {
+            return await Cart.sequelize.transaction(async (t) => {
+                // Find the user's cart
+                const cart = await Cart.findOne({
+                    where: { userId },
+                    transaction: t,
+                })
+
+                if (!cart) {
+                    throw new Error('Cart not found for this user')
+                }
+
+                // Find and delete the cart item
+                const deletedCount = await CartItem.destroy({
+                    where: {
+                        cartId: cart.id,
+                        productId: productId,
+                    },
+                    transaction: t,
+                })
+
+                if (deletedCount === 0) {
+                    throw new Error('Product not found in the cart')
+                }
+
+                // Fetch the updated cart with all its remaining items
+                const updatedCart = await Cart.findByPk(cart.id, {
+                    include: [
+                        {
+                            model: Product,
+                            through: {
+                                model: CartItem,
+                                as: 'cartItems',
+                            },
+                        },
+                    ],
+                    transaction: t,
+                })
+
+                return {
+                    cart: updatedCart,
+                    message: 'Item successfully removed from cart',
+                }
+            })
+        } catch (error) {
+            console.error('Error in deleteUserCartItem:', error)
+            throw error
+        }
+    }
 }
